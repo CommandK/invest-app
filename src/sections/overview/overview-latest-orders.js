@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import React, { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import ArrowRightIcon from '@heroicons/react/24/solid/ArrowRightIcon';
 import {
@@ -27,6 +28,15 @@ const statusMap = {
 export const OverviewLatestOrders = (props) => {
   const { orders = [], sx } = props;
 
+const [companies, setCompanies] = useState([]);
+
+useEffect(() => {
+  fetch("http://localhost:3000/companies")
+    .then((response) => response.json())
+    .then((data) => setCompanies(data));
+}, []);
+
+
   return (
     <Card sx={sx}>
       <CardHeader title="Latest Orders" />
@@ -35,42 +45,26 @@ export const OverviewLatestOrders = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>
-                  Order
-                </TableCell>
-                <TableCell>
-                  Customer
-                </TableCell>
-                <TableCell sortDirection="desc">
-                  Date
-                </TableCell>
-                <TableCell>
-                  Status
-                </TableCell>
+                <TableCell>Symbol</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell sortDirection="desc">MarketCap</TableCell>
+                <TableCell>Net Income</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => {
-                const createdAt = format(order.createdAt, 'dd/MM/yyyy');
+              {companies.map((company) => {
+                // const createdAt = format(company.createdAt, "dd/MM/yyyy");
 
                 return (
-                  <TableRow
-                    hover
-                    key={order.id}
-                  >
+                  <TableRow>
+                    <TableCell>{company.symbol}</TableCell>
+                    <TableCell>{company.name}</TableCell>
+                    <TableCell>{company.marketCap}</TableCell>
+                    <TableCell>{company.netIncome}</TableCell>
                     <TableCell>
-                      {order.ref}
-                    </TableCell>
-                    <TableCell>
-                      {order.customer.name}
-                    </TableCell>
-                    <TableCell>
-                      {createdAt}
-                    </TableCell>
-                    <TableCell>
-                      <SeverityPill color={statusMap[order.status]}>
+                      {/* <SeverityPill color={statusMap[order.status]}>
                         {order.status}
-                      </SeverityPill>
+                      </SeverityPill> */}
                     </TableCell>
                   </TableRow>
                 );
@@ -80,14 +74,14 @@ export const OverviewLatestOrders = (props) => {
         </Box>
       </Scrollbar>
       <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      <CardActions sx={{ justifyContent: "flex-end" }}>
         <Button
           color="inherit"
-          endIcon={(
+          endIcon={
             <SvgIcon fontSize="small">
               <ArrowRightIcon />
             </SvgIcon>
-          )}
+          }
           size="small"
           variant="text"
         >
